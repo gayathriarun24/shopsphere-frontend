@@ -455,8 +455,8 @@ const Home = () => {
                 <input
                   type="range"
                   min="0"
-                  max="1000"
-                  step="10"
+                  max="50000"
+                  step="500"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full accent-[#C5A059] cursor-pointer"
