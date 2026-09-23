@@ -39,7 +39,7 @@ const Home = () => {
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [maxPrice, setMaxPrice] = useState(1000); 
+  const [maxPrice, setMaxPrice] = useState(50000); 
   const [minRating, setMinRating] = useState(0);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
