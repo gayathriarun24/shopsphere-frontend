@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://shopsphere-backend-wi39.onrender.com/api',
 });
 
 // Automatically attach JWT token to requests if available in localStorage
