@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../utils/api';
-import { Mail, Lock, Store, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Store, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -62,8 +63,6 @@ const Login = () => {
               Discover independent designers, curated collections, and artisan-crafted goods seamlessly in one place.
             </p>
           </div>
-
-          
         </div>
 
         {/* Right Side: Clean Form */}
@@ -101,14 +100,21 @@ const Login = () => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-[#C5A059] absolute left-4 top-3.5" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={password}
                   onChange={onChange}
                   required
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#D4C5B9]/60 bg-[#F9F6F0]/40 text-[#1A1A1A] focus:outline-none focus:border-[#C5A059] focus:bg-white text-xs tracking-wider placeholder:text-[#1A1A1A]/30 transition-all"
+                  className="w-full pl-11 pr-11 py-3 rounded-xl border border-[#D4C5B9]/60 bg-[#F9F6F0]/40 text-[#1A1A1A] focus:outline-none focus:border-[#C5A059] focus:bg-white text-xs tracking-wider placeholder:text-[#1A1A1A]/30 transition-all"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3.5 text-[#1A1A1A]/40 hover:text-[#C5A059] transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -125,7 +131,7 @@ const Login = () => {
           <p className="text-center text-xs text-[#1A1A1A]/70 mt-6 tracking-wide font-light">
             No account yet?{' '}
             <Link to="/register" className="text-[#C5A059] hover:text-[#1A1A1A] font-medium tracking-widest uppercase ml-1 transition">
-              Sign up
+              create account
             </Link>
           </p>
         </div>
