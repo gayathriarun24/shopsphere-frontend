@@ -24,7 +24,7 @@ const Home = () => {
     'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=2000&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?q=80&w=2000&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=2000&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=2000&auto=format&fit=crop](https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=2000&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=2000&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop'
   ];
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -39,7 +39,7 @@ const Home = () => {
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [maxPrice, setMaxPrice] = useState(50000); 
+  const [maxPrice, setMaxPrice] = useState(50000); // Updated initial state to 50000
   const [minRating, setMinRating] = useState(0);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
@@ -175,7 +175,7 @@ const Home = () => {
 
   const resetFilters = () => {
     setSelectedCategory('All');
-    setMaxPrice(1000);
+    setMaxPrice(50000); // Updated reset value to 50000
     setMinRating(0);
     setInStockOnly(false);
     setSearchTerm('');
@@ -214,7 +214,6 @@ const Home = () => {
 
       {/* Automatic 10-Image Sliding Hero Banner with Lighter Gradient Overlay */}
       <div className="relative bg-[#1A1A1A] text-[#F9F6F0] overflow-hidden">
-        {/* Background Slider Images with Smooth Crossfade & Increased Opacity */}
         {heroImages.map((img, index) => (
           <div
             key={img}
@@ -226,33 +225,31 @@ const Home = () => {
             style={{ backgroundImage: `url('${img}')` }}
           />
         ))}
-        {/* Lighter gradient overlay for improved image clarity */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A]/85 via-[#1A1A1A]/55 to-transparent" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-6">
             <span className="text-[11px] font-medium tracking-[0.25em] text-[#C5A059] uppercase block">
-              Curated Marketplace & Ecosystem
+              Global Multi-Vendor Marketplace
             </span>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light leading-tight tracking-wide drop-shadow-md">
-              Artisan Collections & Independent Vendors.
+              Discover Millions of Products from Trusted Sellers.
             </h1>
             <p className="text-[#E2D8CF] text-sm sm:text-base font-light max-w-xl leading-relaxed drop-shadow">
-              Explore timeless designs, handcrafted goods, and exclusive multi-vendor inventories gathered in one refined space.
+              Shop millions of items ranging from everyday essentials to unique global finds, all brought to you by a diverse community of independent vendors and brands.
             </p>
 
             <div className="pt-2 max-w-md relative">
               <Search className="w-4 h-4 text-[#1A1A1A] absolute left-4 top-4.5" />
               <input
                 type="text"
-                placeholder="Search collections, pieces, or vendors..."
+                placeholder="Search products, brands, or categories..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 rounded-xl text-[#1A1A1A] bg-white focus:outline-none focus:ring-2 focus:ring-[#C5A059] shadow-2xl text-xs tracking-wider transition-all placeholder:text-slate-400"
               />
             </div>
 
-            {/* Slide Indicators / Dots for all 10 images */}
             <div className="flex items-center gap-1.5 pt-3 overflow-x-auto max-w-full pb-2 scrollbar-none">
               {heroImages.map((_, idx) => (
                 <button
@@ -272,8 +269,6 @@ const Home = () => {
       {/* Scalable Category & Filter Control Bar */}
       <div className="sticky top-0 z-30 bg-[#F9F6F0]/95 backdrop-blur-md border-b border-[#D4C5B9]/40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row justify-between items-center gap-4">
-          
-          {/* Professional Scalable Category Dropdown Selector */}
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <span className="text-[11px] uppercase tracking-widest text-[#1A1A1A]/60 font-medium hidden md:inline">Category:</span>
             <div className="relative w-full sm:w-72">
@@ -292,7 +287,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Filter Modal Trigger & Count Badge */}
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-[#D4C5B9]/30">
             <span className="text-[11px] text-[#1A1A1A]/60 uppercase tracking-widest font-medium">
               Showing <strong className="text-[#1A1A1A]">{filteredProducts.length}</strong> items
@@ -338,7 +332,6 @@ const Home = () => {
                   className="bg-white rounded-2xl shadow-sm border border-[#D4C5B9]/40 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between group"
                 >
                   <div>
-                    {/* Product Image Frame */}
                     <div className="block h-72 bg-[#F9F6F0] overflow-hidden relative">
                       <Link to={`/product/${product._id}`} className="block w-full h-full">
                         {product.images && product.images.length > 0 ? (
@@ -352,7 +345,6 @@ const Home = () => {
                         )}
                       </Link>
                       
-                      {/* Wishlist Button */}
                       <button
                         onClick={() => toggleWishlist(product)}
                         className="absolute top-3 right-3 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md backdrop-blur-md transition cursor-pointer"
@@ -361,13 +353,11 @@ const Home = () => {
                         <Heart className={`w-4 h-4 ${inWishlist ? 'text-red-500 fill-red-500' : 'text-[#1A1A1A]'}`} />
                       </button>
 
-                      {/* Category Badge */}
                       <span className="absolute top-3 left-3 bg-[#1A1A1A]/80 text-[#F9F6F0] text-[10px] font-medium px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-widest border border-[#D4C5B9]/20">
                         {product.category}
                       </span>
                     </div>
 
-                    {/* Product Content Details */}
                     <div className="p-5">
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-1.5 text-[10px] text-[#1A1A1A]/70 uppercase tracking-wider">
@@ -386,7 +376,6 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {/* Card Footer / Actions */}
                   <div className="p-5 pt-0 border-t border-[#F9F6F0] mt-auto">
                     <div className="flex items-center justify-between mb-3 pt-3">
                       <span className="text-base font-serif font-medium text-[#1A1A1A]">${product.price.toFixed(2)}</span>
@@ -446,11 +435,11 @@ const Home = () => {
                 </button>
               </div>
 
-              {/* Price Range Slider */}
+              {/* Price Range Slider - Updated max to 50000 */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-[11px] font-semibold text-[#1A1A1A] uppercase tracking-widest">Max Price</label>
-                  <span className="text-xs font-bold text-[#C5A059]">${maxPrice}</span>
+                  <span className="text-xs font-bold text-[#C5A059]">${maxPrice.toLocaleString()}</span>
                 </div>
                 <input
                   type="range"
@@ -463,8 +452,8 @@ const Home = () => {
                 />
                 <div className="flex justify-between text-[10px] text-[#1A1A1A]/50 mt-1 font-medium">
                   <span>$0</span>
-                  <span>$500</span>
-                  <span>$1000+</span>
+                  <span>$25,000</span>
+                  <span>$50,000+</span>
                 </div>
               </div>
 
