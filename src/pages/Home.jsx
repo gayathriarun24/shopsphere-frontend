@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../utils/api';
-import { Store, ShoppingBag, Search, CheckCircle, AlertCircle, Heart, Filter, RotateCcw, Star, X, ChevronDown } from 'lucide-react';
+import { Store, ShoppingBag, Search, CheckCircle, AlertCircle, Heart, Filter, RotateCcw, Star, X, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,8 +14,12 @@ const Home = () => {
   const [cartVersion, setCartVersion] = useState(0);
   const [wishlistVersion, setWishlistVersion] = useState(0);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 16;
+
   // 10 Curated High-End Lifestyle Images for the Hero Slider
-const heroImages = [
+  const heroImages = [
     'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2000&auto=format&fit=crop', // Mega Sale / Shopping Cart Experience
     'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=2000&auto=format&fit=crop', // Gadgets & Electronics
     'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000&auto=format&fit=crop', // Fashion & Apparel
@@ -39,7 +43,7 @@ const heroImages = [
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [maxPrice, setMaxPrice] = useState(50000); // Updated initial state to 50000
+  const [maxPrice, setMaxPrice] = useState(50000);
   const [minRating, setMinRating] = useState(0);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
@@ -63,6 +67,11 @@ const heroImages = [
     };
     fetchProducts();
   }, []);
+
+  // Reset page to 1 whenever filters, search, or category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, maxPrice, minRating, inStockOnly]);
 
   const isLoggedIn = () => {
     try {
@@ -175,10 +184,11 @@ const heroImages = [
 
   const resetFilters = () => {
     setSelectedCategory('All');
-    setMaxPrice(50000); // Updated reset value to 50000
+    setMaxPrice(50000);
     setMinRating(0);
     setInStockOnly(false);
     setSearchTerm('');
+    setCurrentPage(1);
   };
 
   const filteredProducts = products.filter((product) => {
@@ -193,6 +203,19 @@ const heroImages = [
 
     return matchesSearch && matchesCategory && matchesPrice && matchesRating && matchesStock;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F9F6F0] text-[#1A1A1A] font-sans">
@@ -289,7 +312,7 @@ const heroImages = [
 
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-[#D4C5B9]/30">
             <span className="text-[11px] text-[#1A1A1A]/60 uppercase tracking-widest font-medium">
-              Showing <strong className="text-[#1A1A1A]">{filteredProducts.length}</strong> items
+              Showing <strong className="text-[#1A1A1A]">{filteredProducts.length > 0 ? indexOfFirstItem + 1 : 0}-{Math.min(indexOfLastItem, filteredProducts.length)}</strong> of <strong className="text-[#1A1A1A]">{filteredProducts.length}</strong> items
             </span>
             <button
               onClick={() => setShowFiltersModal(true)}
@@ -320,100 +343,150 @@ const heroImages = [
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {filteredProducts.map((product) => {
-              const qtyInCart = getProductQtyInCart(product._id);
-              const isOutOfStock = product.stock === 0;
-              const inWishlist = isProductInWishlist(product._id);
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+              {currentProducts.map((product) => {
+                const qtyInCart = getProductQtyInCart(product._id);
+                const isOutOfStock = product.stock === 0;
+                const inWishlist = isProductInWishlist(product._id);
 
-              return (
-                <div 
-                  key={product._id} 
-                  className="bg-white rounded-2xl shadow-sm border border-[#D4C5B9]/40 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="block h-72 bg-[#F9F6F0] overflow-hidden relative">
-                      <Link to={`/product/${product._id}`} className="block w-full h-full">
-                        {product.images && product.images.length > 0 ? (
-                          <img 
-                            src={product.images[0]} 
-                            alt={product.title} 
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#1A1A1A]/40 text-xs tracking-wider uppercase">No Image</div>
-                        )}
-                      </Link>
-                      
-                      <button
-                        onClick={() => toggleWishlist(product)}
-                        className="absolute top-3 right-3 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md backdrop-blur-md transition cursor-pointer"
-                        title={inWishlist ? "Remove from Wishlist" : "Save to Wishlist"}
-                      >
-                        <Heart className={`w-4 h-4 ${inWishlist ? 'text-red-500 fill-red-500' : 'text-[#1A1A1A]'}`} />
-                      </button>
+                return (
+                  <div 
+                    key={product._id} 
+                    className="bg-white rounded-2xl shadow-sm border border-[#D4C5B9]/40 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="block h-72 bg-[#F9F6F0] overflow-hidden relative">
+                        <Link to={`/product/${product._id}`} className="block w-full h-full">
+                          {product.images && product.images.length > 0 ? (
+                            <img 
+                              src={product.images[0]} 
+                              alt={product.title} 
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[#1A1A1A]/40 text-xs tracking-wider uppercase">No Image</div>
+                          )}
+                        </Link>
+                        
+                        <button
+                          onClick={() => toggleWishlist(product)}
+                          className="absolute top-3 right-3 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md backdrop-blur-md transition cursor-pointer"
+                          title={inWishlist ? "Remove from Wishlist" : "Save to Wishlist"}
+                        >
+                          <Heart className={`w-4 h-4 ${inWishlist ? 'text-red-500 fill-red-500' : 'text-[#1A1A1A]'}`} />
+                        </button>
 
-                      <span className="absolute top-3 left-3 bg-[#1A1A1A]/80 text-[#F9F6F0] text-[10px] font-medium px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-widest border border-[#D4C5B9]/20">
-                        {product.category}
-                      </span>
-                    </div>
-
-                    <div className="p-5">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-1.5 text-[10px] text-[#1A1A1A]/70 uppercase tracking-wider">
-                          <Store className="w-3 h-3 text-[#C5A059]" />
-                          <span>{product.vendor?.storeName || 'Store'}</span>
-                        </div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isOutOfStock ? 'text-red-500' : product.stock <= 10 ? 'text-[#C5A059]' : 'text-transparent'}`}>
-                          {isOutOfStock ? 'Sold Out' : product.stock <= 10 ? `Only ${product.stock} left` : '.'}
+                        <span className="absolute top-3 left-3 bg-[#1A1A1A]/80 text-[#F9F6F0] text-[10px] font-medium px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-widest border border-[#D4C5B9]/20">
+                          {product.category}
                         </span>
                       </div>
 
-                      <Link to={`/product/${product._id}`}>
-                        <h3 className="font-serif font-medium text-[#1A1A1A] text-sm mb-1.5 line-clamp-1 hover:text-[#C5A059] transition tracking-wide">{product.title}</h3>
-                      </Link>
-                      <p className="text-[#1A1A1A]/60 text-xs mb-3 line-clamp-2 font-light leading-relaxed">{product.description}</p>
-                    </div>
-                  </div>
+                      <div className="p-5">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-1.5 text-[10px] text-[#1A1A1A]/70 uppercase tracking-wider">
+                            <Store className="w-3 h-3 text-[#C5A059]" />
+                            <span>{product.vendor?.storeName || 'Store'}</span>
+                          </div>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isOutOfStock ? 'text-red-500' : product.stock <= 10 ? 'text-[#C5A059]' : 'text-transparent'}`}>
+                            {isOutOfStock ? 'Sold Out' : product.stock <= 10 ? `Only ${product.stock} left` : '.'}
+                          </span>
+                        </div>
 
-                  <div className="p-5 pt-0 border-t border-[#F9F6F0] mt-auto">
-                    <div className="flex items-center justify-between mb-3 pt-3">
-                      <span className="text-base font-serif font-medium text-[#1A1A1A]">${product.price.toFixed(2)}</span>
-                    </div>
-
-                    {isOutOfStock ? (
-                      <button disabled className="w-full py-2.5 rounded-xl text-[11px] font-medium uppercase tracking-widest bg-[#F9F6F0] text-[#1A1A1A]/40 cursor-not-allowed border border-[#D4C5B9]/30">
-                        Out of Stock
-                      </button>
-                    ) : qtyInCart === 0 ? (
-                      <button
-                        onClick={() => handleAddToCartFirstTime(product)}
-                        className="w-full bg-[#1A1A1A] hover:bg-[#C5A059] text-[#F9F6F0] hover:text-[#1A1A1A] py-2.5 rounded-xl text-[11px] font-medium tracking-widest uppercase transition-all shadow-sm cursor-pointer border border-transparent hover:border-[#C5A059]"
-                      >
-                        Add to Cart
-                      </button>
-                    ) : (
-                      <div className="flex items-center justify-between border border-[#1A1A1A] rounded-xl overflow-hidden bg-[#F9F6F0]">
-                        <button
-                          onClick={() => updateCartQuantity(product, qtyInCart - 1, product.stock)}
-                          className="px-3 py-2 text-[#1A1A1A] hover:bg-[#D4C5B9]/40 transition text-sm font-medium cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span className="text-[11px] font-semibold text-[#1A1A1A] tracking-wider uppercase">{qtyInCart} in cart</span>
-                        <button
-                          onClick={() => updateCartQuantity(product, qtyInCart + 1, product.stock)}
-                          className="px-3 py-2 text-[#1A1A1A] hover:bg-[#D4C5B9]/40 transition text-sm font-medium cursor-pointer"
-                        >
-                          +
-                        </button>
+                        <Link to={`/product/${product._id}`}>
+                          <h3 className="font-serif font-medium text-[#1A1A1A] text-sm mb-1.5 line-clamp-1 hover:text-[#C5A059] transition tracking-wide">{product.title}</h3>
+                        </Link>
+                        <p className="text-[#1A1A1A]/60 text-xs mb-3 line-clamp-2 font-light leading-relaxed">{product.description}</p>
                       </div>
-                    )}
+                    </div>
+
+                    <div className="p-5 pt-0 border-t border-[#F9F6F0] mt-auto">
+                      <div className="flex items-center justify-between mb-3 pt-3">
+                        <span className="text-base font-serif font-medium text-[#1A1A1A]">${product.price.toFixed(2)}</span>
+                      </div>
+
+                      {isOutOfStock ? (
+                        <button disabled className="w-full py-2.5 rounded-xl text-[11px] font-medium uppercase tracking-widest bg-[#F9F6F0] text-[#1A1A1A]/40 cursor-not-allowed border border-[#D4C5B9]/30">
+                          Out of Stock
+                        </button>
+                      ) : qtyInCart === 0 ? (
+                        <button
+                          onClick={() => handleAddToCartFirstTime(product)}
+                          className="w-full bg-[#1A1A1A] hover:bg-[#C5A059] text-[#F9F6F0] hover:text-[#1A1A1A] py-2.5 rounded-xl text-[11px] font-medium tracking-widest uppercase transition-all shadow-sm cursor-pointer border border-transparent hover:border-[#C5A059]"
+                        >
+                          Add to Cart
+                        </button>
+                      ) : (
+                        <div className="flex items-center justify-between border border-[#1A1A1A] rounded-xl overflow-hidden bg-[#F9F6F0]">
+                          <button
+                            onClick={() => updateCartQuantity(product, qtyInCart - 1, product.stock)}
+                            className="px-3 py-2 text-[#1A1A1A] hover:bg-[#D4C5B9]/40 transition text-sm font-medium cursor-pointer"
+                          >
+                            -
+                          </button>
+                          <span className="text-[11px] font-semibold text-[#1A1A1A] tracking-wider uppercase">{qtyInCart} in cart</span>
+                          <button
+                            onClick={() => updateCartQuantity(product, qtyInCart + 1, product.stock)}
+                            className="px-3 py-2 text-[#1A1A1A] hover:bg-[#D4C5B9]/40 transition text-sm font-medium cursor-pointer"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls Footer */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-12 pt-8 border-t border-[#D4C5B9]/40">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest font-medium transition cursor-pointer border ${
+                    currentPage === 1
+                      ? 'bg-[#F9F6F0] text-[#1A1A1A]/30 border-[#D4C5B9]/30 cursor-not-allowed'
+                      : 'bg-white text-[#1A1A1A] border-[#D4C5B9]/70 hover:border-[#1A1A1A] shadow-sm'
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4" /> Previous
+                </button>
+
+                <div className="flex items-center gap-1.5">
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNumber = index + 1;
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={`w-10 h-10 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center justify-center ${
+                          currentPage === pageNumber
+                            ? 'bg-[#1A1A1A] text-[#F9F6F0] shadow-md border border-[#C5A059]'
+                            : 'bg-white text-[#1A1A1A] border border-[#D4C5B9]/70 hover:border-[#1A1A1A]'
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest font-medium transition cursor-pointer border ${
+                    currentPage === totalPages
+                      ? 'bg-[#F9F6F0] text-[#1A1A1A]/30 border-[#D4C5B9]/30 cursor-not-allowed'
+                      : 'bg-white text-[#1A1A1A] border-[#D4C5B9]/70 hover:border-[#1A1A1A] shadow-sm'
+                  }`}
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -435,7 +508,7 @@ const heroImages = [
                 </button>
               </div>
 
-              {/* Price Range Slider - Updated max to 50000 */}
+              {/* Price Range Slider */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-[11px] font-semibold text-[#1A1A1A] uppercase tracking-widest">Max Price</label>
