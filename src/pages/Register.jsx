@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../utils/api';
-import { Store, User, Lock, Mail, FileText, ArrowRight } from 'lucide-react';
+import { Store, User, Lock, Mail, FileText, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ const Register = () => {
     storeName: '',
     storeDescription: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -128,14 +129,21 @@ const Register = () => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-[#C5A059] absolute left-4 top-3.5" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={password}
                   onChange={onChange}
                   required
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-[#D4C5B9]/60 bg-[#F9F6F0]/40 text-[#1A1A1A] focus:outline-none focus:border-[#C5A059] focus:bg-white text-xs tracking-wider placeholder:text-[#1A1A1A]/30 transition-all"
+                  className="w-full pl-11 pr-11 py-2.5 rounded-xl border border-[#D4C5B9]/60 bg-[#F9F6F0]/40 text-[#1A1A1A] focus:outline-none focus:border-[#C5A059] focus:bg-white text-xs tracking-wider placeholder:text-[#1A1A1A]/30 transition-all"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3.5 text-[#1A1A1A]/40 hover:text-[#C5A059] transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
