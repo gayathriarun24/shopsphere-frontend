@@ -74,7 +74,7 @@ const Login = () => {
         <div className="md:w-7/12 p-8 sm:p-10 flex flex-col justify-center bg-white">
           <div className="mb-6">
             <h2 className="text-xl sm:text-2xl font-serif font-light text-[#1A1A1A] tracking-wide mb-1">Sign In</h2>
-            <p className="text-[#1A1A1A]/60 text-xs tracking-wider uppercase">Access your dashboard & orders</p>
+            <p className="text-[#1A1A1A]/60 text-xs tracking-wider uppercase">Sign in to manage your store and orders</p>
           </div>
 
           {error && (
@@ -121,7 +121,7 @@ const Login = () => {
               disabled={loading}
               className="w-full bg-[#1A1A1A] hover:bg-[#C5A059] text-[#F9F6F0] hover:text-[#1A1A1A] font-medium py-3.5 rounded-xl transition-all shadow-sm text-xs tracking-widest uppercase cursor-pointer flex items-center justify-center gap-2 group border border-transparent hover:border-[#C5A059] mt-2"
             >
-              <span>{loading ? 'Authenticating...' : 'Continue'}</span>
+              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
               {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
