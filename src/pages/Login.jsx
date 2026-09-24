@@ -63,11 +63,7 @@ const Login = () => {
             </p>
           </div>
 
-          <div className="pt-8 mt-8 border-t border-[#D4C5B9]/30">
-            <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-medium">
-              Member Privileges Active
-            </p>
-          </div>
+          
         </div>
 
         {/* Right Side: Clean Form */}
